@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💖</title>
+<style>
+body {
+  margin:0; font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#ff5f9e,#ff8fa3);
+  display:flex; justify-content:center; align-items:center;
+  height:100vh; overflow:hidden; position:relative;
+}
+.card {
+  background:white; padding:35px; border-radius:20px;
+  text-align:center; width:340px; min-height:260px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.25);
+  position:relative; z-index:10; animation:fadeIn 0.5s ease;
+}
+@keyframes fadeIn {from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);}}
+.hidden {display:none;}
+h1,h2{color:#ff2e63;}
+input{
+  width:100%; padding:12px; border-radius:12px;
+  border:2px solid #ff8fa3; margin-bottom:15px;
+}
+button{
+  padding:12px 22px; border-radius:25px; border:none;
+  font-size:16px; cursor:pointer; margin-top:5px;
+}
+.primary,.yes-btn{background:#ff2e63; color:white;}
+.no-btn{background:#eee; position:absolute; transition:0.1s;}
+.pulse-btn{background:#ff8fa3; color:white;}
+p{
+  font-size:16px; line-height:1.6; margin-top:15px;
+  color:#ff2e63; font-weight:bold; animation:textPulse 2s infinite;
+}
+@keyframes textPulse {
+  0% {transform:scale(1); opacity:0.8;}
+  50% {transform:scale(1.05); opacity:1;}
+  100% {transform:scale(1); opacity:0.8;}
+}
+.heart{
+  position:absolute; font-size:20px; color:#ff2e63;
+  user-select:none; pointer-events:none; z-index:1;
+  animation:fall linear forwards;
+}
+@keyframes fall{
+  0%{transform:translateY(-50px) rotate(0deg); opacity:1;}
+  100%{transform:translateY(100vh) rotate(360deg); opacity:0;}
+}
+.emojiMove{display:inline-block; animation:emojiBounce 1.5s infinite;}
+@keyframes emojiBounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);}}
+</style>
+</head>
+<body>
+
+<!-- STEP 1 -->
+<div class="card" id="step1">
+  <h1>Surprise 😍</h1>
+  <input type="text" id="nameInput" placeholder="Entre ton prénom 💕">
+  <button class="primary" onclick="goToStep2()">C'est parti 💌</button>
+</div>
+
+<!-- STEP 2 -->
+<div class="card hidden" id="step2">
+  <h2 id="questionText"></h2>
+  <button class="yes-btn" onclick="sayYes()">Oui 💖</button>
+  <button class="no-btn" id="noBtn">Non 😏</button>
+</div>
+
+<!-- STEP 3 -->
+<div class="card hidden" id="step3">
+  <h2>Yeeeees 💘</h2>
+  <p id="poemText"></p>
+  <div id="youtubePlayer" class="hidden">
+    <iframe width="300" height="170"
+      src="https://www.youtube.com/embed/D-YDEyuDxWU?autoplay=1&controls=1"
+      title="CKay - Love Nwantiti"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  </div>
+  <button class="pulse-btn" onclick="replay()">💖 Rejouer la surprise 💖</button>
+</div>
+
+<script>
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
+const nameInput = document.getElementById("nameInput");
+const questionText = document.getElementById("questionText");
+const noBtn = document.getElementById("noBtn");
+const poemText = document.getElementById("poemText");
+const youtubePlayer = document.getElementById("youtubePlayer");
+
+let userName = "";
+
+const poems = [
+  "Depuis que <b>{name}</b> a touché mon cœur, <span class='emojiMove'>💞</span><br>Chaque instant vibre d'amour et de bonheur 💖",
+  "Oh <b>{name}</b>, ton sourire illumine mes journées et colore mes nuits <span class='emojiMove'>🌹</span>",
+  "Comme dans <i>Love Nwantiti</i>, <b>{name}</b>, mon amour est doux, profond et éternel <span class='emojiMove'>💘</span>",
+  "<b>{name}</b>, tu es la lumière qui éclaire mon cœur et chaque battement me rappelle combien je t’aime <span class='emojiMove'>✨</span>",
+  "Si aimer, c’est marcher au même tempo, alors <b>{name}</b>, marchons ensemble pour toujours <span class='emojiMove'>❤️</span>",
+  "Chaque moment avec <b>{name}</b> est un trésor que je veux garder précieusement <span class='emojiMove'>💝</span>",
+  "<b>{name}</b>, tu fais battre mon cœur plus fort, plus vite, plus passionné <span class='emojiMove'>💓</span>",
+  "Mon amour pour <b>{name}</b> est sincère, pur et magique, comme un rêve éveillé <span class='emojiMove'>🌟</span>",
+  "Avec toi <b>{name}</b>, chaque jour devient une mélodie de bonheur et de tendresse <span class='emojiMove'>🎶</span>",
+  "Mon cœur chante pour <b>{name}</b>, comme dans une chanson d’amour éternelle <span class='emojiMove'>💞</span>"
+];
+
+function goToStep2() {
+  userName = nameInput.value.trim();
+  if (!userName) { alert("Entre un prénom 😊"); return; }
+  step1.classList.add("hidden");
+  step2.classList.remove("hidden");
+  questionText.innerText = `${userName}, veux-tu être ma Valentine ? 🥺👉👈`;
+  for (let i = 0; i < 5; i++) setTimeout(escapeNo, i * 200);
+}
+
+function escapeNo() {
+  const maxX = step2.clientWidth - noBtn.offsetWidth;
+  const maxY = step2.clientHeight - noBtn.offsetHeight;
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
+  if (navigator.vibrate) navigator.vibrate(80);
+}
+
+noBtn.addEventListener("mouseenter", () => {
+  let moves = 10;
+  let interval = setInterval(() => {
+    escapeNo();
+    moves--;
+    if (moves <= 0) clearInterval(interval);
+  }, 80);
+});
+noBtn.addEventListener("touchstart", escapeNo);
+
+function sayYes() {
+  step2.classList.add("hidden");
+  step3.classList.remove("hidden");
+  youtubePlayer.classList.remove("hidden");
+
+  let randomPoem = poems[Math.floor(Math.random() * poems.length)];
+  randomPoem = randomPoem.replace(/{name}/g, userName);
+  poemText.innerHTML = randomPoem;
+
+  startHearts();
+}
+
+function startHearts() {
+  for (let i = 0; i < 30; i++) setTimeout(createHeart, i * 200);
+}
+
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  const icons = ["💖","❤️","💕","💘","💞","💝"];
+  heart.innerText = icons[Math.floor(Math.random() * icons.length)];
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.fontSize = (10 + Math.random() * 20) + "px";
+  heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),8000);
+}
+
+function replay() {
+  step3.classList.add("hidden");
+  step1.classList.remove("hidden");
+  nameInput.value = "";
+  poemText.innerHTML = "";
+  youtubePlayer.classList.add("hidden");
+}
+</script>
+</body>
+</html>
